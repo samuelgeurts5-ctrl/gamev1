@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Littlewood Wilds — gamev1</title>
+<style>
+:root{--ink:#26352d;--cream:#f7f0d8;--leaf:#477653;--gold:#f2c66d;--panel:#fff8e5}
+*{box-sizing:border-box}body{margin:0;background:#182820;color:var(--ink);font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;display:flex;justify-content:center;min-height:100vh;padding:18px}
+.shell{width:min(1180px,100%);display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:14px;align-content:center}
+header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;color:#f9f2dc;padding:0 3px 2px}
+.brand{font-size:clamp(22px,3vw,32px);font-weight:1000;letter-spacing:-1px}.brand span{color:#f3ca73}.subtitle{font-size:12px;color:#c5d7bb;letter-spacing:2px;text-transform:uppercase}
+.stage{position:relative;border:5px solid #d9c99a;border-radius:12px;overflow:hidden;background:#75a85c;box-shadow:0 12px 0 #101b16,0 18px 35px #0005;min-width:0}
+canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;aspect-ratio:16/10}
+.overlay{position:absolute;inset:0;background:#14261dcf;display:flex;align-items:center;justify-content:center;padding:20px;color:#fff8e5;text-align:center}
+.card{max-width:430px;background:#f7f0d8;color:#26352d;padding:26px;border:4px solid #d7c48c;border-radius:14px;box-shadow:0 8px 0 #27382a}
+.card h1{font-size:clamp(28px,4vw,44px);margin:0 0 5px;line-height:1;color:#355c3e}.card p{line-height:1.5}.pixel{font-size:34px;letter-spacing:7px;margin:12px}
+button{font:inherit;font-weight:900;cursor:pointer;border:0;border-radius:8px;padding:11px 16px;background:#e5b653;color:#26352d;box-shadow:0 4px 0 #b17d35;transition:transform .1s}button:hover{transform:translateY(-2px)}button:active{transform:translateY(2px);box-shadow:0 1px 0 #b17d35}
+.side{display:flex;flex-direction:column;gap:10px;color:#f7f0d8}.panel{background:#f7f0d8;color:#26352d;border:3px solid #d6c48f;border-radius:10px;padding:12px;box-shadow:0 4px 0 #101b16}
+.panel h2{margin:0 0 9px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#648056}
+.clock{display:flex;justify-content:space-between;font-weight:900;font-size:16px}.meter{height:9px;background:#d6d0b7;border-radius:8px;overflow:hidden;margin:7px 0}.meter i{display:block;height:100%;width:100%;background:#d86c60;transition:width .2s}.stats{font-size:12px;color:#657064;display:flex;justify-content:space-between}
+.inventory{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.item{border:2px solid #d5c89f;background:#fff9e8;border-radius:7px;padding:8px 6px;font-size:12px}.item strong{display:block;font-size:19px;color:#466d48}.item small{color:#6f7967}
+.controls{font-size:12px;line-height:1.75}.key{display:inline-block;min-width:22px;text-align:center;background:#fff9e8;border:1px solid #c4b78f;border-radius:4px;padding:0 4px;font-weight:900}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.actions button{font-size:11px;padding:9px 4px}.notice{min-height:32px;font-size:12px;line-height:1.4;color:#f5d99a;padding:0 4px}
+footer{grid-column:1/-1;text-align:center;color:#a9bca7;font-size:11px;margin-top:2px}
+@media(max-width:760px){body{padding:9px}.shell{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.side .panel:last-of-type{grid-column:1/-1}header{grid-column:1}.subtitle{display:none}footer{grid-column:1}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><div><div class="brand">LITTLEWOOD <span>WILDS</span></div><div class="subtitle">A tiny wilderness, yours to shape</div></div><div class="subtitle">A GAME IN THE MAKING · v0.1</div></header>
+<main class="stage"><canvas id="game" width="800" height="500" aria-label="Littlewood Wilds game world"></canvas>
+<div class="overlay" id="start"><div class="card"><div class="pixel">🌲 ✦ 🌿</div><h1>Littlewood Wilds</h1><p>A little patch of wilderness is waiting for you. Gather, explore, and make a home beneath the trees.</p><p><b>WASD / arrow keys</b> to move · <b>E</b> gather · <b>1</b> campfire · <b>2</b> fence</p><button id="startBtn">ENTER THE WILDS →</button></div></div>
+</main>
+<aside class="side">
+<section class="panel"><h2>Field journal</h2><div class="clock"><span id="day">Day 1</span><span id="time">08:00 AM</span></div><div class="meter"><i id="healthbar"></i></div><div class="stats"><span>♥ <b id="health">100</b> health</span><span id="weather">☀ Clear</span></div></section>
+<section class="panel"><h2>Your backpack</h2><div class="inventory">
+<div class="item">🪵 Wood<strong id="wood">0</strong><small>building material</small></div>
+<div class="item">🪨 Stone<strong id="stone">0</strong><small>solid stuff</small></div>
+<div class="item">🌿 Fiber<strong id="fiber">0</strong><small>from wild plants</small></div>
+<div class="item">✨ Spirit<strong id="spirit">0</strong><small>found in the wild</small></div>
+</div></section>
+<section class="panel"><h2>Make something</h2><div class="actions"><button id="fireBtn">🔥 Campfire (1)</button><button id="fenceBtn">🪵 Fence (2)</button><button id="saveBtn">💾 Save world</button><button id="resetBtn">↻ New world</button></div></section>
+<section class="panel controls"><h2>How to play</h2><div><span class="key">WASD</span> / <span class="key">↑↓←→</span> Move</div><div><span class="key">E</span> Gather nearby tree, rock, or bush</div><div><span class="key">1</span> Select campfire · <span class="key">2</span> select fence</div><div><span class="key">Click</span> nearby ground to build</div><div><span class="key">Esc</span> Pause / resume</div></section>
+<div class="notice" id="notice">Welcome, wanderer. The woods are peaceful today.</div>
+</aside>
+<footer>Made for curious explorers · Progress saves in this browser · Multiplayer is a future milestone</footer>
+</div>
+<script>
+(()=> {
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+const W=800,H=500,T=32,COLS=70,ROWS=55;
+let world,player,keys={},running=false,day=1,minutes=480,last=0,selected='fire',message='Welcome, wanderer. The woods are peaceful today.',messageUntil=0;
+const ui=id=>document.getElementById(id);
+const rand=(a,b)=>Math.random()*(b-a)+a;
+function makeWorld(){let tiles=[],objects=[],id=0;for(let y=0;y<ROWS;y++){tiles[y]=[];for(let x=0;x<COLS;x++){let n=Math.sin(x*.35+y*.19)+Math.cos(x*.13-y*.27);tiles[y][x]=n>1.25?'flower':n<-.8?'dark':'grass';if(x>3&&y>3&&x<COLS-3&&y<ROWS-3&&Math.random()<.105){let type=Math.random()<.49?'tree':Math.random()<.58?'rock':'bush';objects.push({id:id++,type,x:x*T+T/2,y:y*T+T/2,hp:1+Math.floor(Math.random()*2)});}}}return {tiles,objects,builds:[]};}
+function fresh(){world=makeWorld();player={x:COLS*T/2,y:ROWS*T/2,health:100,wood:0,stone:0,fiber:0,spirit:0,dir:0};day=1;minutes=480;world.objects=world.objects.filter(o=>Math.hypot(o.x-player.x,o.y-player.y)>95);save(false);say('A fresh world! Find trees, rocks, and bushes to gather resources.');}
+function say(s){message=s;messageUntil=performance.now()+4200;ui('notice').textContent=s;}
+function save(show=true){try{localStorage.setItem('littlewood-wilds-save',JSON.stringify({world,player,day,minutes}));if(show)say('World saved in this browser. See you next time!');}catch(e){if(show)say('Could not save in this browser.');}}
+function load(){try{let d=JSON.parse(localStorage.getItem('littlewood-wilds-save'));if(d&&d.world&&d.player){world=d.world;player=d.player;day=d.day||1;minutes=d.minutes||480;return true;}}catch(e){}return false;}
+function start(){if(!world&&!load())fresh();running=true;ui('start').style.display='none';last=performance.now();requestAnimationFrame(loop);}
+function tile(x,y){let tx=Math.floor(x/T),ty=Math.floor(y/T);return world.tiles[ty]?.[tx]||'grass';}
+function drawTile(x,y,type){let px=x*T,py=y*T;ctx.fillStyle=type==='dark'?'#79a45a':type==='flower'?'#8dbb68':'#82b363';ctx.fillRect(px,py,T,T);let n=(x*17+y*31)%7;ctx.fillStyle=type==='dark'?'#719b53':'#91bd6b';ctx.fillRect(px+n*3%T,py+(n*7)%T,3,3);if(type==='flower'){ctx.fillStyle=(x+y)%2?'#f6d77e':'#f3a5a1';ctx.fillRect(px+20,py+9,4,4);ctx.fillRect(px+22,py+7,2,2);}if((x+y)%5===0){ctx.fillStyle='#719e56';ctx.fillRect(px+5,py+23,2,4);}}
+function drawObject(o){let x=Math.round(o.x),y=Math.round(o.y);ctx.save();ctx.translate(x,y);ctx.fillStyle='#38543b';ctx.fillRect(-10,8,20,5);if(o.type==='tree'){ctx.fillStyle='#795438';ctx.fillRect(-4,-2,8,19);ctx.fillStyle='#2e6544';ctx.fillRect(-14,-17,28,20);ctx.fillStyle='#3d8050';ctx.fillRect(-11,-25,22,17);ctx.fillStyle='#55965a';ctx.fillRect(-6,-25,10,7);ctx.fillStyle='#a3c875';ctx.fillRect(-10,-17,5,4);}else if(o.type==='rock'){ctx.fillStyle='#7d8580';ctx.fillRect(-11,-7,22,14);ctx.fillStyle='#b8bdb0';ctx.fillRect(-7,-8,10,6);ctx.fillStyle='#656f6a';ctx.fillRect(3,1,8,5);}else{ctx.fillStyle='#417b49';ctx.fillRect(-10,-8,20,15);ctx.fillStyle='#75a957';ctx.fillRect(-7,-13,8,7);ctx.fillStyle='#f2d98a';ctx.fillRect(2,-5,4,4);}ctx.restore();}
+function drawBuild(b){ctx.save();ctx.translate(b.x,b.y);if(b.type==='fire'){ctx.fillStyle='#7b573d';ctx.fillRect(-13,3,26,7);ctx.fillRect(-9,-2,18,7);ctx.fillStyle='#f4b24c';ctx.fillRect(-5,-12,10,15);ctx.fillStyle='#f9e28b';ctx.fillRect(-2,-8,4,8);ctx.fillStyle='#de6a3e';ctx.fillRect(-9,-5,5,8);ctx.fillRect(5,-4,5,7);}else{ctx.fillStyle='#81583b';ctx.fillRect(-14,-4,28,8);ctx.fillRect(-12,-10,5,20);ctx.fillRect(7,-10,5,20);ctx.fillStyle='#c3945d';ctx.fillRect(-10,-2,20,3);}ctx.restore();}
+function drawPlayer(){let x=player.x,y=player.y;ctx.fillStyle='#39533b';ctx.fillRect(x-9,y+9,18,4);ctx.fillStyle='#e8b18b';ctx.fillRect(x-6,y-12,12,11);ctx.fillStyle='#4b3428';ctx.fillRect(x-7,y-14,14,5);ctx.fillStyle='#547aa0';ctx.fillRect(x-7,y-2,14,12);ctx.fillStyle='#f0d06f';ctx.fillRect(x-7,y+7,5,7);ctx.fillRect(x+2,y+7,5,7);ctx.fillStyle='#2e4b6a';ctx.fillRect(x-8,y+12,6,3);ctx.fillRect(x+2,y+12,6,3);ctx.fillStyle='#382e2b';ctx.fillRect(x-3,y-7,2,2);ctx.fillRect(x+2,y-7,2,2);}
+function loop(now){if(!running)return;let dt=Math.min((now-last)/1000,.05);last=now;update(dt);render();requestAnimationFrame(loop);}
+function update(dt){if(keys['w']||keys['arrowup'])player.y-=150*dt;if(keys['s']||keys['arrowdown'])player.y+=150*dt;if(keys['a']||keys['arrowleft'])player.x-=150*dt;if(keys['d']||keys['arrowright'])player.x+=150*dt;player.x=Math.max(16,Math.min(COLS*T-16,player.x));player.y=Math.max(16,Math.min(ROWS*T-16,player.y));minutes+=dt*2.2;if(minutes>=1440){minutes-=1440;day++;say('Day '+day+' begins. A new day, a new adventure.');}ui('day').textContent='Day '+day;let hh=Math.floor(minutes/60),mm=Math.floor(minutes%60);ui('time').textContent=(hh%12||12)+':'+String(mm).padStart(2,'0')+' '+(hh>=12?'PM':'AM');let night=minutes<360||minutes>1120;ui('weather').textContent=night?'☾ Starlit':'☀ Clear';ctx.globalAlpha=1;ui('health').textContent=player.health;ui('healthbar').style.width=player.health+'%';for(let k of ['wood','stone','fiber','spirit'])ui(k).textContent=player[k];}
+function render(){let camX=Math.max(0,Math.min(COLS*T-W,player.x-W/2)),camY=Math.max(0,Math.min(ROWS*T-H,player.y-H/2));ctx.clearRect(0,0,W,H);let x0=Math.floor(camX/T),y0=Math.floor(camY/T);for(let y=y0;y<y0+Math.ceil(H/T)+1;y++)for(let x=x0;x<x0+Math.ceil(W/T)+1;x++){if(world.tiles[y]?.[x])drawTile(x-x0,y-y0,world.tiles[y][x]);}
+ctx.save();ctx.translate(-camX,-camY);let things=[...world.objects.map(o=>({...o,kind:'obj'})),...world.builds.map(b=>({...b,kind:'build'})),{x:player.x,y:player.y,kind:'player'}].sort((a,b)=>a.y-b.y);for(let o of things){if(o.x<camX-40||o.x>camX+W+40||o.y<camY-40||o.y>camY+H+40)continue;if(o.kind==='obj')drawObject(o);else if(o.kind==='build')drawBuild(o);else drawPlayer();}ctx.restore();
+let n=minutes<360||minutes>1120?0.34:minutes>1000?0.12:0;if(n){ctx.fillStyle='rgba(20,31,65,'+n+')';ctx.fillRect(0,0,W,H);}ctx.fillStyle='#fff4cf';ctx.font='bold 12px system-ui';ctx.fillText('LITTLEWOOD MEADOWS',15,23);ctx.fillStyle='#263d2c';ctx.fillRect(12,H-30,210,20);ctx.fillStyle='#f8efd2';ctx.font='11px system-ui';ctx.fillText('Selected: '+(selected==='fire'?'🔥 Campfire':'🪵 Fence')+'  ·  E to gather',20,H-16);
+if(performance.now()<messageUntil){ctx.fillStyle='#203829e8';ctx.fillRect(W/2-190,12,380,30);ctx.fillStyle='#fff3d1';ctx.textAlign='center';ctx.font='12px system-ui';ctx.fillText(message,W/2,31);ctx.textAlign='left';}}
+function gather(){let o=world.objects.filter(o=>Math.hypot(o.x-player.x,o.y-player.y)<55).sort((a,b)=>Math.hypot(a.x-player.x,a.y-player.y)-Math.hypot(b.x-player.x,b.y-player.y))[0];if(!o){say('Nothing close enough. Walk up to a tree, rock, or bush.');return;}if(o.type==='tree'){player.wood+=2+Math.floor(Math.random()*2);player.fiber+=Math.random()<.35?1:0;say('Chop! You collected wood from a tree.');}else if(o.type==='rock'){player.stone+=2;say('Clink! You collected stone.');}else{player.fiber+=2;if(Math.random()<.22)player.spirit++;say('You gathered wild plants and fiber.');}o.hp--;if(o.hp<=0)world.objects=world.objects.filter(a=>a.id!==o.id);save(false);}
+function build(type){let cost=type==='fire'?{wood:4,stone:2}:{wood:2};for(let k in cost)if(player[k]<cost[k]){say('Need '+Object.entries(cost).map(([k,v])=>v+' '+k).join(' and ')+'. Explore and gather first!');return;}for(let k in cost)player[k]-=cost[k];selected=type;say(type==='fire'?'Campfire selected! Click a nearby spot to place it.':'Fence selected! Click a nearby spot to place it.');}
+function place(e){if(!running)return;let r=canvas.getBoundingClientRect(),sx=(e.clientX-r.left)/r.width*W,sy=(e.clientY-r.top)/r.height*H;let camX=Math.max(0,Math.min(COLS*T-W,player.x-W/2)),camY=Math.max(0,Math.min(ROWS*T-H,player.y-H/2));let x=Math.floor((sx+camX)/T)*T+T/2,y=Math.floor((sy+camY)/T)*T+T/2;if(Math.hypot(x-player.x,y-player.y)>145){say('Build closer to your character.');return;}if(world.objects.some(o=>Math.hypot(o.x-x,o.y-y)<25)||world.builds.some(o=>Math.hypot(o.x-x,o.y-y)<25)){say('That spot is occupied. Try a clear patch of ground.');return;}world.builds.push({x,y,type:selected});say(selected==='fire'?'Your campfire is built!':'Fence placed! Your little home is taking shape.');save(false);}
+document.addEventListener('keydown',e=>{let k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();keys[k]=true;if(k==='e'&&running)gather();if(k==='1'){selected='fire';say('Selected: campfire. Click nearby ground to place one.');}if(k==='2'){selected='fence';say('Selected: fence. Click nearby ground to place one.');}if(k==='escape'&&running){running=false;ui('start').style.display='flex';ui('start').querySelector('h1').textContent='Take a breather';ui('start').querySelector('p').textContent='Your world is still here. Ready to head back out?';ui('startBtn').textContent='RESUME ADVENTURE →';}});document.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+canvas.addEventListener('click',place);ui('startBtn').addEventListener('click',()=>{ui('start').querySelector('h1').textContent='Littlewood Wilds';ui('startBtn').textContent='ENTER THE WILDS →';start();});ui('fireBtn').addEventListener('click',()=>build('fire'));ui('fenceBtn').addEventListener('click',()=>build('fence'));ui('saveBtn').addEventListener('click',()=>save(true));ui('resetBtn').addEventListener('click',()=>{if(confirm('Start a brand-new world? This replaces the saved world in this browser.')){fresh();render();}});
+if(load()){render();say('Welcome back! Your saved world has been restored.');}else{fresh();render();}
+window.addEventListener('beforeunload',()=>save(false));
+})();
+</script>
+</body>
+</html>
