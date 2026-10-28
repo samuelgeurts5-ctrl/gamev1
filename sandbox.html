@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel Playground</title>
+<style>
+:root{--bg:#10131b;--panel:#191e2a;--panel2:#222a39;--line:#343d50;--text:#edf2ff;--muted:#9ba8bf;--accent:#a6f36b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#20283a,#10131b 60%);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 22px;border-bottom:1px solid #30394a;background:#121722d9;position:sticky;top:0;z-index:2;backdrop-filter:blur(12px)}
+.brand{display:flex;gap:12px;align-items:center}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#b9ff75,#4ed9ba);color:#172018;font-size:24px;font-weight:900;box-shadow:0 5px 24px #76ff9b2c}
+h1{font-size:19px;letter-spacing:.2px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:2px}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 12px;border-radius:9px;cursor:pointer;font:inherit;transition:background .15s,border-color .15s,transform .15s}button:hover{background:#303b50;border-color:#5b6b87}button:active{transform:translateY(1px)}button.primary{background:var(--accent);color:#182017;border-color:var(--accent);font-weight:750}button.primary:hover{background:#c5ff9c}
+main{max-width:1500px;margin:0 auto;padding:18px;display:grid;grid-template-columns:220px minmax(300px,1fr) 230px;gap:15px}
+.panel{background:linear-gradient(160deg,#1a202d,#171c27);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}.panel-head{padding:13px 14px;border-bottom:1px solid var(--line);font-weight:750;display:flex;justify-content:space-between;align-items:center}.panel-body{padding:13px}
+.section-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:800;margin:2px 0 9px}
+.elements{display:grid;grid-template-columns:1fr 1fr;gap:7px}.element{padding:9px 7px;display:flex;gap:7px;align-items:center;text-align:left;background:#202635;border:1px solid transparent;border-radius:9px;font-size:12px;min-width:0}.element .swatch{width:16px;height:16px;border-radius:4px;flex-shrink:0;box-shadow:inset 0 0 0 1px #ffffff38}.element span:last-child{overflow:hidden;text-overflow:ellipsis}.element.selected{border-color:var(--accent);background:#2b3b31;box-shadow:0 0 0 1px #a6f36b28}.divider{height:1px;background:var(--line);margin:15px 0}.range-row{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin:11px 0 5px}.range-row b{color:var(--text);font-weight:700}input[type=range]{width:100%;accent-color:var(--accent)}.toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.toolgrid button{font-size:12px;padding:9px 5px}.stage{display:flex;flex-direction:column}.stagebar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px #a6f36b80}.canvas-wrap{padding:10px;background:#0b0e14;position:relative;flex:1;min-height:420px;display:flex;align-items:center;justify-content:center;overflow:hidden}canvas{display:block;max-width:100%;max-height:72vh;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;image-rendering:pixelated;cursor:crosshair;background:#0a0e16;border:1px solid #303a4b;border-radius:4px;touch-action:none}.canvas-hint{position:absolute;bottom:18px;left:20px;color:#8491a8;font-size:11px;background:#0d111bd9;padding:6px 9px;border-radius:6px;pointer-events:none}.stagefoot{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;flex-wrap:wrap}.right-stat{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#202635;padding:11px;border-radius:9px}.stat .num{font-size:21px;font-weight:800;letter-spacing:-.5px}.stat .label{font-size:11px;color:var(--muted);margin-top:2px}.legend{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;margin:10px 0}.legend .swatch{width:12px;height:12px;border-radius:3px}.feed{display:flex;flex-direction:column;gap:8px}.feed-item{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}.feed-item:before{content:"";width:6px;height:6px;border-radius:50%;background:#7ea3ff;flex-shrink:0;margin-top:5px}.presets{display:grid;gap:7px}.preset{display:flex;justify-content:space-between;align-items:center;font-size:12px}.preset span{color:var(--muted)}.small-note{color:var(--muted);font-size:11px;line-height:1.55}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:#d8ffb8;color:#192315;font-weight:750;padding:10px 15px;border-radius:10px;z-index:5;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1050px){main{grid-template-columns:200px minmax(280px,1fr)}.rightcol{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:15px}.rightcol .panel{height:fit-content}}
+@media(max-width:680px){header{padding:12px}.sub{display:none}main{padding:9px;grid-template-columns:1fr;gap:10px}.leftcol{order:2}.stage{order:1}.rightcol{order:3;grid-column:auto;grid-template-columns:1fr}.canvas-wrap{min-height:300px;padding:5px}.canvas-hint{display:none}.elements{grid-template-columns:repeat(3,1fr)}.element{justify-content:center;flex-direction:column;gap:5px}.element span:last-child{max-width:100%}.top-actions button{padding:8px}.stagebar{padding:10px}.panel-body{padding:10px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">✳</div><div><h1>Pixel Playground</h1><div class="sub">A tiny world made of elements</div></div></div>
+ <div class="top-actions"><button id="pauseBtn">Ⅱ Pause</button><button id="stepBtn">⏭ Step</button><button class="primary" id="clearBtn">↻ New world</button></div>
+</header>
+<main>
+ <aside class="panel leftcol">
+  <div class="panel-head">🧪 Elements <span id="elementCount" class="sub">16 elements</span></div>
+  <div class="panel-body">
+   <div class="section-label">Basic</div><div class="elements" id="basicElements"></div>
+   <div class="divider"></div><div class="section-label">Nature & life</div><div class="elements" id="natureElements"></div>
+   <div class="divider"></div><div class="section-label">Reactions</div><div class="elements" id="reactionElements"></div>
+   <div class="divider"></div><div class="section-label">Tools</div><div class="toolgrid"><button id="eraseBtn">⌫ Eraser</button><button id="pickBtn">⌖ Pick pixel</button></div>
+   <div class="range-row"><span>Brush size</span><b id="brushValue">4 px</b></div><input id="brush" type="range" min="1" max="16" value="4">
+  </div>
+ </aside>
+ <section class="panel stage">
+  <div class="stagebar"><div class="status"><span class="dot" id="liveDot"></span><span id="runStatus">Simulation running</span></div><div class="status">Selected: <b id="selectedName" style="color:#edf2ff">Sand</b></div></div>
+  <div class="canvas-wrap"><canvas id="world" width="240" height="135" aria-label="Pixel element simulation"></canvas><div class="canvas-hint">Click and drag to draw · Try water on sand!</div></div>
+  <div class="stagefoot"><span id="worldSize">240 × 135 pixels</span><span>Every pixel has its own rules</span><span id="fps">60 FPS</span></div>
+ </section>
+ <aside class="rightcol" style="display:flex;flex-direction:column;gap:15px">
+  <section class="panel"><div class="panel-head">📊 World stats</div><div class="panel-body"><div class="right-stat"><div class="stat"><div class="num" id="particleCount">0</div><div class="label">Active pixels</div></div><div class="stat"><div class="num" id="tempValue">20°</div><div class="label">World temperature</div></div><div class="stat"><div class="num" id="tickValue">0</div><div class="label">Simulation ticks</div></div><div class="stat"><div class="num" id="reactionCount">0</div><div class="label">Reactions</div></div></div><div class="divider"></div><div class="section-label">Element key</div><div class="legend"><i class="swatch" style="background:#e8bd63"></i>Powders fall and pile up</div><div class="legend"><i class="swatch" style="background:#3c9cff"></i>Liquids flow and spread</div><div class="legend"><i class="swatch" style="background:#ff6b35"></i>Hot elements react</div><div class="legend"><i class="swatch" style="background:#65d46e"></i>Living elements grow</div></div></section>
+  <section class="panel"><div class="panel-head">🌎 Quick scenes</div><div class="panel-body"><div class="presets"><button class="preset" data-scene="garden">🌿 Little garden <span>load →</span></button><button class="preset" data-scene="volcano">🌋 Mini volcano <span>load →</span></button><button class="preset" data-scene="aquarium">🐟 Water world <span>load →</span></button><button class="preset" data-scene="campfire">🔥 Campfire <span>load →</span></button></div><div class="divider"></div><div class="small-note">Tip: try pouring water over lava, planting seeds in wet dirt, or dropping sand into water. Discover what happens!</div></div></section>
+ </aside>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+(() => {
+const W=240,H=135, EMPTY=0, WALL=1, SAND=2, WATER=3, STONE=4, WOOD=5, FIRE=6, STEAM=7, DIRT=8, PLANT=9, SEED=10, OIL=11, LAVA=12, ACID=13, SALT=14, ICE=15, METAL=16, SMOKE=17;
+const defs={
+ [EMPTY]:{name:'Eraser',color:'#0a0e16',kind:'empty'},[WALL]:{name:'Wall',color:'#8793a7',kind:'solid'},
+ [SAND]:{name:'Sand',color:'#e8bd63',kind:'powder'},[WATER]:{name:'Water',color:'#3c9cff',kind:'liquid'},
+ [STONE]:{name:'Stone',color:'#788393',kind:'solid'},[WOOD]:{name:'Wood',color:'#9c6038',kind:'solid',burn:true},
+ [FIRE]:{name:'Fire',color:'#ff713b',kind:'gas'},[STEAM]:{name:'Steam',color:'#b8d7e8',kind:'gas'},
+ [DIRT]:{name:'Dirt',color:'#79513c',kind:'powder'},[PLANT]:{name:'Plant',color:'#65d46e',kind:'solid',burn:true},
+ [SEED]:{name:'Seed',color:'#b8d45c',kind:'powder'},[OIL]:{name:'Oil',color:'#6c7b37',kind:'liquid',burn:true},
+ [LAVA]:{name:'Lava',color:'#ff4c24',kind:'liquid',hot:true},[ACID]:{name:'Acid',color:'#b9ff48',kind:'liquid'},
+ [SALT]:{name:'Salt',color:'#f4f1e7',kind:'powder'},[ICE]:{name:'Ice',color:'#a8eaff',kind:'solid'},
+ [METAL]:{name:'Metal',color:'#b6becb',kind:'solid'},[SMOKE]:{name:'Smoke',color:'#737987',kind:'gas'}
+};
+const groups={basicElements:[SAND,WATER,STONE,WALL,WOOD,DIRT],natureElements:[PLANT,SEED,SALT,ICE,METAL],reactionElements:[FIRE,STEAM,OIL,LAVA,ACID,SMOKE]};
+const canvas=document.getElementById('world'),ctx=canvas.getContext('2d',{alpha:false});
+const image=ctx.createImageData(W,H), pixels=image.data;
+let grid=new Uint8Array(W*H), moved=new Uint8Array(W*H), age=new Uint16Array(W*H), tick=0,reactions=0,paused=false,selected=SAND,brush=4,mouseDown=false,lastCell=null,eraseMode=false,pickMode=false,frameCount=0,lastFps=performance.now(),fps=60,heat=20,simSpeed=1;
+const idx=(x,y)=>y*W+x, inside=(x,y)=>x>=0&&x<W&&y>=0&&y<H;
+function set(x,y,t){if(inside(x,y)){const i=idx(x,y);if(grid[i]!==t){grid[i]=t;age[i]=0;}}}
+function get(x,y){return inside(x,y)?grid[idx(x,y)]:WALL}
+function swap(x,y,nx,ny){if(!inside(nx,ny))return false;let a=idx(x,y),b=idx(nx,ny);if(grid[b]!==EMPTY)return false;grid[b]=grid[a];age[b]=age[a];grid[a]=EMPTY;age[a]=0;moved[b]=1;return true}
+function replace(x,y,t){const i=idx(x,y);if(grid[i]!==t){grid[i]=t;age[i]=0;reactions++;}}
+function rand(n){return Math.random()*n|0}
+function paint(x,y,t=selected){for(let dy=-brush+1;dy<brush;dy++)for(let dx=-brush+1;dx<brush;dx++)if(dx*dx+dy*dy<brush*brush&&inside(x+dx,y+dy))set(x+dx,y+dy,eraseMode?EMPTY:t)}
+function line(x0,y0,x1,y1,t){let dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,err=dx+dy;while(true){paint(x0,y0,t);if(x0===x1&&y0===y1)break;let e=2*err;if(e>=dy){err+=dy;x0+=sx}if(e<=dx){err+=dx;y0+=sy}}}
+function nearType(x,y,types){for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(types.includes(get(x+dx,y+dy)))return true;return false}
+function updateCell(x,y){
+ const i=idx(x,y),t=grid[i];if(t===EMPTY||t===WALL||moved[i])return;
+ age[i]=Math.min(65535,age[i]+1);
+ const down=get(x,y+1),up=get(x,y-1),left=get(x-1,y),right=get(x+1,y);
+ const side=Math.random()<.5?-1:1;
+ if(t===SAND||t===DIRT||t===SALT||t===SEED){
+  if(down===EMPTY){swap(x,y,x,y+1);return}
+  if([WATER,OIL,ACID].includes(down)){const b=idx(x,y+1);grid[b]=t;grid[i]=down;age[b]=0;age[i]=0;moved[b]=1;return}
+  if(get(x+side,y+1)===EMPTY&&swap(x,y,x+side,y+1))return;
+  if(get(x-side,y+1)===EMPTY&&swap(x,y,x-side,y+1))return;
+  if(t===SEED&&nearType(x,y,[WATER])&&get(x,y-1)===EMPTY&&Math.random()<.025){replace(x,y,PLANT);set(x,y-1,PLANT)}
+  return;
+ }
+ if(t===WATER||t===OIL||t===ACID||t===LAVA){
+  if(t===LAVA){
+   if(nearType(x,y,[WATER])){replace(x,y,STONE);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(get(x+dx,y+dy)===WATER)replace(x+dx,y+dy,STEAM);return}
+   if(Math.random()<.03){set(x+rand(3)-1,y-1,FIRE)}
+   if(Math.random()<.006){replace(x,y,STONE);return}
+  }
+  if(t===ACID){for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){let q=get(x+dx,y+dy);if([WOOD,PLANT,STONE,DIRT,SAND].includes(q)&&Math.random()<.035)replace(x+dx,y+dy,EMPTY)}}
+  if(down===EMPTY){swap(x,y,x,y+1);return}
+  if([SAND,DIRT,SALT,SEED].includes(down)&&Math.random()<.35){const b=idx(x,y+1);grid[b]=t;grid[i]=down;age[b]=0;age[i]=0;moved[b]=1;return}
+  for(let k=0;k<2;k++){let dir=k===0?side:-side;if(get(x+dir,y)===EMPTY&&swap(x,y,x+dir,y))return;if(get(x+dir,y+1)===EMPTY&&swap(x,y,x+dir,y+1))return}
+  if(t===WATER&&nearType(x,y,[ICE])&&Math.random()<.001)replace(x,y,ICE);
+  if(t===OIL&&nearType(x,y,[FIRE,LAVA])&&Math.random()<.3)replace(x,y,FIRE);
+  return;
+ }
+ if(t===FIRE){
+  if(age[i]>18+rand(22)){replace(x,y,SMOKE);return}
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){let q=get(x+dx,y+dy);if([WOOD,PLANT,OIL].includes(q)&&Math.random()<.13)replace(x+dx,y+dy,FIRE);if(q===WATER&&Math.random()<.16){replace(x+dx,y+dy,STEAM);replace(x,y,SMOKE);return}}
+  if(get(x,y-1)===EMPTY&&Math.random()<.65)swap(x,y,x,y-1);
+  return;
+ }
+ if(t===STEAM||t===SMOKE){if(age[i]>100+rand(100)){replace(x,y,EMPTY);return}if(up===EMPTY&&Math.random()<.7)swap(x,y,x,y-1);else if(get(x+side,y-1)===EMPTY&&Math.random()<.6)swap(x,y,x+side,y-1);else if(get(x+side,y)===EMPTY&&Math.random()<.25)swap(x,y,x+side,y);return}
+ if(t===PLANT){
+  if(nearType(x,y,[FIRE,LAVA])&&Math.random()<.22){replace(x,y,FIRE);return}
+  if(nearType(x,y,[WATER])&&get(x,y-1)===EMPTY&&Math.random()<.012)set(x,y-1,PLANT);
+  if(get(x,y+1)===EMPTY&&Math.random()<.002)swap(x,y,x,y+1);
+  return;
+ }
+ if(t===ICE&&nearType(x,y,[LAVA,FIRE])&&Math.random()<.16)replace(x,y,WATER);
+}
+function simulate(){
+ moved.fill(0);
+ for(let y=H-1;y>=0;y--){const rev=Math.random()<.5;for(let n=0;n<W;n++){let x=rev?W-1-n:n;updateCell(x,y)}}
+ tick++;
+}
+function render(){
+ for(let i=0;i<grid.length;i++){let t=grid[i],o=i*4;if(t===EMPTY){pixels[o]=10;pixels[o+1]=14;pixels[o+2]=22;pixels[o+3]=255;continue}let c=defs[t]?.color||'#ffffff';let r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);let variation=((i*17+tick*7)%13)-6;if(t===WATER||t===LAVA||t===FIRE)variation+=rand(3);pixels[o]=Math.max(0,Math.min(255,r+variation));pixels[o+1]=Math.max(0,Math.min(255,g+variation));pixels[o+2]=Math.max(0,Math.min(255,b+variation));pixels[o+3]=255}
+ ctx.putImageData(image,0,0);
+}
+function stats(){let count=0,hot=0;for(let i=0;i<grid.length;i++)if(grid[i]!==EMPTY){count++;if([FIRE,LAVA].includes(grid[i]))hot++}document.getElementById('particleCount').textContent=count.toLocaleString();document.getElementById('tempValue').textContent=(20+hot*0.04|0)+'°';document.getElementById('tickValue').textContent=tick.toLocaleString();document.getElementById('reactionCount').textContent=reactions.toLocaleString();document.getElementById('fps').textContent=fps+' FPS'}
+function loop(now){frameCount++;if(now-lastFps>=1000){fps=frameCount;frameCount=0;lastFps=now;stats()}if(!paused){for(let n=0;n<simSpeed;n++)simulate()}render();requestAnimationFrame(loop)}
+function clear(){grid.fill(EMPTY);age.fill(0);tick=0;reactions=0;toast('Fresh world created')}
+function fillFloor(){for(let x=0;x<W;x++)set(x,H-2,WALL)}
+function scene(name){clear();fillFloor();
+ if(name==='garden'){for(let x=22;x<220;x++)for(let y=H-9;y<H-2;y++)if(Math.random()<.8)set(x,y,DIRT);for(let x=35;x<210;x+=25){set(x,H-10,SEED);for(let j=1;j<5;j++)if(Math.random()<.7)set(x+j,H-10-j,PLANT)}for(let x=45;x<200;x+=34)for(let y=H-18;y<H-10;y++)if(Math.random()<.7)set(x+rand(7)-3,y,SAND);for(let x=50;x<190;x+=50)for(let y=H-15;y<H-10;y++)set(x,y,WATER)}
+ if(name==='volcano'){for(let x=0;x<W;x++)for(let y=H-22;y<H-2;y++){let d=Math.abs(x-W/2);if(y>H-22+(d*.48))set(x,y,STONE)}for(let x=0;x<W;x++)for(let y=H-3;y<H-2;y++)set(x,y,WALL);for(let x=108;x<132;x++)for(let y=H-18;y<H-13;y++)set(x,y,LAVA);for(let n=0;n<150;n++)set(W/2+rand(45)-22,H-24-rand(20),Math.random()<.55?LAVA:FIRE)}
+ if(name==='aquarium'){for(let x=4;x<W-4;x++)for(let y=H-55;y<H-2;y++)set(x,y,WATER);for(let x=0;x<W;x++)for(let y=H-2;y<H;y++)set(x,y,WALL);for(let x=30;x<210;x+=23)for(let y=H-13;y<H-4;y++)if(Math.random()<.8)set(x+rand(8),y,PLANT);for(let n=0;n<400;n++)set(8+rand(W-16),H-55+rand(50),Math.random()<.7?WATER:SAND)}
+ if(name==='campfire'){for(let x=80;x<160;x++)for(let y=H-7;y<H-2;y++)set(x,y,WOOD);for(let x=105;x<135;x++)for(let y=H-13;y<H-7;y++)set(x,y,FIRE);for(let x=95;x<145;x+=5)set(x,H-7,WOOD);for(let n=0;n<100;n++)set(120+rand(35)-17,H-15-rand(15),Math.random()<.6?SMOKE:FIRE)}
+ paused=false;updatePause();toast('Loaded: '+({garden:'Little garden',volcano:'Mini volcano',aquarium:'Water world',campfire:'Campfire'}[name]||name))}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),1700)}
+function select(t){selected=t;eraseMode=t===EMPTY;pickMode=false;document.querySelectorAll('.element').forEach(b=>b.classList.toggle('selected',Number(b.dataset.type)===t));document.getElementById('selectedName').textContent=defs[t].name;document.getElementById('eraseBtn').classList.toggle('primary',eraseMode)}
+function buildElements(){for(const [group,types] of Object.entries(groups)){const host=document.getElementById(group);types.forEach(t=>{const b=document.createElement('button');b.className='element';b.dataset.type=t;b.innerHTML='<i class="swatch" style="background:'+defs[t].color+'"></i><span>'+defs[t].name+'</span>';b.onclick=()=>select(t);host.appendChild(b)})}}
+function pos(e){const r=canvas.getBoundingClientRect();return {x:Math.floor((e.clientX-r.left)/r.width*W),y:Math.floor((e.clientY-r.top)/r.height*H)}}
+canvas.addEventListener('pointerdown',e=>{mouseDown=true;canvas.setPointerCapture(e.pointerId);const p=pos(e);if(pickMode){select(get(p.x,p.y));toast('Picked '+defs[get(p.x,p.y)].name);pickMode=false;return}paint(p.x,p.y);lastCell=p});
+canvas.addEventListener('pointermove',e=>{if(!mouseDown||pickMode)return;const p=pos(e);if(lastCell)line(lastCell.x,lastCell.y,p.x,p.y);else paint(p.x,p.y);lastCell=p});
+canvas.addEventListener('pointerup',()=>{mouseDown=false;lastCell=null});canvas.addEventListener('pointercancel',()=>{mouseDown=false;lastCell=null});
+document.getElementById('brush').addEventListener('input',e=>{brush=+e.target.value;document.getElementById('brushValue').textContent=brush+' px'});
+function updatePause(){document.getElementById('pauseBtn').textContent=paused?'▶ Resume':'Ⅱ Pause';document.getElementById('runStatus').textContent=paused?'Simulation paused':'Simulation running';document.getElementById('liveDot').style.background=paused?'#7f8ca4':'#a6f36b'}
+document.getElementById('pauseBtn').onclick=()=>{paused=!paused;updatePause()};document.getElementById('stepBtn').onclick=()=>{if(paused){simulate();render();stats()}else toast('Pause first to step one tick')};document.getElementById('clearBtn').onclick=()=>{clear();fillFloor()};document.getElementById('eraseBtn').onclick=()=>select(EMPTY);document.getElementById('pickBtn').onclick=()=>{pickMode=true;toast('Click a pixel to select its element')};document.querySelectorAll('[data-scene]').forEach(b=>b.onclick=()=>scene(b.dataset.scene));
+buildElements();select(SAND);scene('garden');requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
